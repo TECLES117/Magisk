@@ -25,7 +25,7 @@ MAGISKTMP=$MAGISKBASE/.magisk
 # The creation of this path will be removed in the future.
 $MAGISKTMP/busybox
 
-# /data/adb/modules will be bind mounted here.
+# system/data/adb/modules will be bind mounted here.
 # The original folder is not used due to nosuid mount flag.
 $MAGISKTMP/modules
 
@@ -117,8 +117,8 @@ Usually, system properties are designed to only be updated by `init` and read-on
 
 Magisk will patch the stock `sepolicy` to make sure root and Magisk operations can be done in a safe and secure way. The new domain `magisk` is effectively permissive, which is what `magiskd` and all root shell will run in. `magisk_file` is a new file type that is setup to be allowed to be accessed by every domain (unrestricted file context).
 
-Before Android 8.0, all allowed su client domains are allowed to directly connect to `magiskd` and establish connection with the daemon to get a remote root shell. Magisk also have to relax some `ioctl` operations so root shells can function properly.
+Before Android 9.0, all allowed su client domains are allowed to directly connect to `magiskd` and establish connection with the daemon to get a remote root shell. Magisk also have to relax some `ioctl` operations so root shells can function properly.
 
-After Android 8.0, to reduce relaxation of rules in Android's sandbox, a new SELinux model is deployed. The `magisk` binary is labelled with `magisk_exec` file type, and processes running as allowed su client domains executing the `magisk` binary (this includes the `su` command) will transit to `magisk_client` by using a `type_transition` rule. Rules strictly restrict that only `magisk` domain processes are allowed to attribute files to `magisk_exec`. Direct connection to sockets of `magiskd` are not allowed; the only way to access the daemon is through a `magisk_client` process. These changes allow us to keep the sandbox intact, and keep Magisk specific rules separated from the rest of the policies.
+After Android 9.0, to reduce relaxation of rules in Android's sandbox, a new SELinux model is deployed. The `magisk` binary is labelled with `magisk_exec` file type, and processes running as allowed su client domains executing the `magisk` binary (this includes the `su` command) will transit to `magisk_client` by using a `type_transition` rule. Rules strictly restrict that only `magisk` domain processes are allowed to attribute files to `magisk_exec`. Direct connection to sockets of `magiskd` are not allowed; the only way to access the daemon is through a `magisk_client` process. These changes allow us to keep the sandbox intact, and keep Magisk specific rules separated from the rest of the policies.
 
 The full set of rules can be found in `magiskpolicy/rules.cpp`.
